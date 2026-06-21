@@ -7,17 +7,17 @@ type Author struct {
 }
 
 type Book struct {
-	Id            int     `json:"isbn"`
+	Id            int     `json:"id"`
 	Title         string  `json:"title"`
 	Price         float64 `json:"price"`
 	YearPublished int     `json:"year_published"`
 	Author        Author
 }
 
-var books []Book
+var Db []Book
 
 func init() {
-	books = append(books, Book{
+	Db = append(Db, Book{
 		Id:            1,
 		Title:         "War and Peace",
 		Price:         123.32,
@@ -48,4 +48,13 @@ func init() {
 			Age:     59,
 		},
 	})
+}
+
+func FindBookById(id int) (Book, bool) {
+	for _, b := range Db {
+		if b.Id == id {
+			return b, true
+		}
+	}
+	return Book{}, false
 }
