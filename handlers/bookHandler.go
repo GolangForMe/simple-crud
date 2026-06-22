@@ -17,11 +17,11 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 	helpers.InitHeader(w)
 
 	// Вытаскиваем идетификатор книги из пути запроса
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		msg := fmt.Sprintf("Ошибка в передаче идентификатора %s книги", vars["id"])
+		msg := fmt.Sprintf("Ошибка в передаче идентификатора %s книги", mux.Vars(r)["id"])
 		log.Println(msg) // лоигруемся для себя
+		w.WriteHeader(400)
 		json.NewEncoder(w).Encode(helpers.Message{
 			Message: msg,
 		})
@@ -35,6 +35,7 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		msg := fmt.Sprintf("Книга с идентификатором %d не найдена", id)
 		log.Println(msg) // логируемся для себя
+		w.WriteHeader(404)
 		json.NewEncoder(w).Encode(helpers.Message{
 			Message: msg,
 		})
@@ -45,6 +46,7 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		msg := fmt.Sprintf("Книга с идентификатором %d найдена", id)
 		log.Println(msg) // логируемся
+		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(book)
 		return
 	}
