@@ -53,7 +53,29 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateBook(w http.ResponseWriter, r *http.Request) {
-	//
+	helpers.InitHeader(w)
+
+	// Вычитываем книгу из тела запроса
+	var book models.Book
+	err := json.NewDecoder(r.Body).Decode(&book)
+
+	if err != nil {
+		msg := fmt.Sprintln("Ошибка с JSON-файлом в запросе")
+		log.Println(msg)
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(helpers.Message{
+			Message: msg,
+		})
+		return
+	}
+
+	// Добавляем книгу в БД
+	book.Id = len(models.Db) + 1
+	models.AddBook(book)
+
+	// Возвращаем клиенту книгу, которую он пытается добавить в БД
+	w.WriteHeader(201)
+	json.NewEncoder(w).Encode(book)
 }
 
 func UpdateBook(w http.ResponseWriter, r *http.Request) {

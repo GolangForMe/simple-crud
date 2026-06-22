@@ -58,3 +58,7 @@ func FindBookById(id int) (Book, bool) {
 	}
 	return Book{}, false
 }
+
+func AddBook(book Book) {
+	Db = append(Db, book)
+}
