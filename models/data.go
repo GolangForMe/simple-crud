@@ -11,7 +11,7 @@ type Book struct {
 	Title         string  `json:"title"`
 	Price         float64 `json:"price"`
 	YearPublished int     `json:"year_published"`
-	Author        Author
+	Author        Author  `json:"author"`
 }
 
 var Db []Book
@@ -61,4 +61,13 @@ func FindBookById(id int) (Book, bool) {
 
 func AddBook(book Book) {
 	Db = append(Db, book)
+}
+
+func UpdateBook(id int, book Book) {
+	for i, b := range Db {
+		if b.Id == id {
+			Db[i] = book
+			return
+		}
+	}
 }
