@@ -130,5 +130,40 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteBook(w http.ResponseWriter, r *http.Request) {
-	//
+	helpers.InitHeader(w)
+
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	// не удалось распарсить идентификатор из строки запроса
+	if err != nil {
+		msg := fmt.Sprintf("Ошибка в передаче идентификатора %s книги", mux.Vars(r)["id"])
+		log.Println(msg)
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(helpers.Message{Message: msg})
+		return
+	}
+
+	_, ok := models.FindBookById(id)
+	// не нашли книгу с идентификатором
+	if !ok {
+		msg := fmt.Sprintf("Книга с идентификатором %d не найдена", id)
+		log.Println(msg)
+		w.WriteHeader(404)
+		json.NewEncoder(w).Encode(helpers.Message{Message: msg})
+		return
+	}
+
+	// не удалось удалить книгу по идентификатору
+	if !models.DeleteBook(id) {
+		msg := fmt.Sprintf("Не удалось удалить книгу с идентификатором %d", id)
+		log.Println(msg)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(helpers.Message{Message: msg})
+		return
+	}
+
+	// удалось удалить книгу по идентификатору
+	msg := fmt.Sprintf("Успешно удалили книгу с идентификатором %d", id)
+	log.Println(msg)
+	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(helpers.Message{Message: msg})
 }
